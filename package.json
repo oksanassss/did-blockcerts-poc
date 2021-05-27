@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate:privateKey": "npx ts-node key-management/generatePrivateKey.ts"
+    "generate:keyPair": "npx ts-node key-management/generateKeyPair.ts"
   },
   "author": "Julien Fraichot",
   "license": "ISC",

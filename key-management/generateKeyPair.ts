@@ -1,3 +1,5 @@
+import * as buffer from "buffer";
+
 const bip32 = require('bip32');
 const bip39 = require('bip39');
 
@@ -10,10 +12,16 @@ const chainCode = {
 
 function getPath (): string {
   // https://ethereum.stackexchange.com/a/70029
+  // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
   return `m/44'/${chainCode.testnet}'/0/0/0`;
 }
 
-function generatePrivateKey (): Buffer {
+interface IKeyPair {
+  privateKey: Buffer;
+  publicKey: Buffer;
+}
+
+function generateKeyPair (): IKeyPair {
   const mnemonic = bip39.generateMnemonic();
   console.log('mnenomic phrase generated:');
   console.log(mnemonic);
@@ -21,9 +29,14 @@ function generatePrivateKey (): Buffer {
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const node = bip32.fromSeed(seed);
   const path = getPath();
-  const privateKey = node.derivePath(path).privateKey;
+  const derived = node.derivePath(path);
+  const { privateKey, publicKey } = derived;
   console.log('private key generated', privateKey.toString('hex'));
-  return privateKey;
+  console.log('public key generated', publicKey.toString('hex'));
+  return {
+    privateKey,
+    publicKey
+  };
 }
 
-generatePrivateKey();
+generateKeyPair();
