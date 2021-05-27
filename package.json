@@ -11,7 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "bip32": "^2.0.6",
-    "bip39": "^3.0.4"
+    "bip39": "^3.0.4",
+    "bitcoinjs-lib": "^5.2.0"
   },
   "devDependencies": {
     "ts-node": "^10.0.0",

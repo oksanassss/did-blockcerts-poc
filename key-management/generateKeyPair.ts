@@ -1,7 +1,6 @@
-import * as buffer from "buffer";
-
 const bip32 = require('bip32');
 const bip39 = require('bip39');
+const bitcoin = require('bitcoinjs-lib');
 
 // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 const chainCode = {
@@ -46,4 +45,10 @@ function generateKeyPair (network = 'testnet'): IKeyPair {
   };
 }
 
-generateKeyPair();
+function getBTCAddress (publicKey: Buffer) {
+  return bitcoin.payments.p2pkh({ pubkey: publicKey, network: bitcoin.networks.testnet }).address;
+}
+
+const { publicKey } = generateKeyPair();
+const bitcoinAddress = getBTCAddress(publicKey);
+console.log('bitcoin address generated', bitcoinAddress);
