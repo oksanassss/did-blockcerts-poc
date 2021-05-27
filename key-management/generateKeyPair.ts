@@ -10,10 +10,16 @@ const chainCode = {
   'eth': 60
 }
 
-function getPath (): string {
+function getPath (network: string): string {
+  let chain = chainCode[network];
+
+  if (!chain) {
+    console.warn('network is not listed, defaulting to testnet');
+    chain = chain.testnet;
+  }
   // https://ethereum.stackexchange.com/a/70029
   // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
-  return `m/44'/${chainCode.testnet}'/0/0/0`;
+  return `m/44'/${chain}'/0/0/0`;
 }
 
 interface IKeyPair {
@@ -21,14 +27,15 @@ interface IKeyPair {
   publicKey: Buffer;
 }
 
-function generateKeyPair (): IKeyPair {
+function generateKeyPair (network = 'testnet'): IKeyPair {
+  console.log('target network is', network);
   const mnemonic = bip39.generateMnemonic();
   console.log('mnenomic phrase generated:');
   console.log(mnemonic);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const node = bip32.fromSeed(seed);
-  const path = getPath();
+  const path = getPath(network);
   const derived = node.derivePath(path);
   const { privateKey, publicKey } = derived;
   console.log('private key generated', privateKey.toString('hex'));
