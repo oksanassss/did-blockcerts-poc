@@ -1,6 +1,7 @@
 const bip32 = require('bip32');
 const bip39 = require('bip39');
 const bitcoin = require('bitcoinjs-lib');
+const web3 = require('web3');
 
 function getPath (network: string): string {
   // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
@@ -44,13 +45,25 @@ function generateKeyPair (network = 'testnet'): IKeyPair {
   };
 }
 
-function getBTCAddress (publicKey: Buffer, network: string) {
+function getBTCAddress (publicKey: Buffer, network: string): string {
   const supportedNetworks = Object.keys(bitcoin.networks);
   if (!supportedNetworks.includes(network)) {
     console.error('unsupported bitcoin network, cannot generate address');
     return null;
   }
   return bitcoin.payments.p2pkh({ pubkey: publicKey, network: bitcoin.networks[network] }).address;
+}
+
+function getEthereumAddress (publicKey: Buffer): string {
+  const publicKeyString = publicKey.toString('hex');
+  // could also use https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#privatekeytoaccount - but no public key
+  const keccakString = web3.utils.sha3(publicKeyString);
+  const address = `0x${keccakString.substr(keccakString.length - 40)}`
+  if (web3.utils.isAddress(address)) {
+    return address;
+  }
+  console.error('Error creating ETH address.');
+  return null;
 }
 
 function getNetwork (): string {
@@ -62,6 +75,8 @@ function getNetwork (): string {
 
 const network = getNetwork();
 console.log('target network is', network);
-const { publicKey } = generateKeyPair(network);
+const { publicKey, privateKey } = generateKeyPair(network);
 const bitcoinAddress = getBTCAddress(publicKey, network);
 console.log('bitcoin address generated', bitcoinAddress);
+const ethereumAddress = getEthereumAddress(privateKey);
+console.log('ethereum address generated', ethereumAddress);
