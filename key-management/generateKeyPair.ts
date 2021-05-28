@@ -2,19 +2,19 @@ const bip32 = require('bip32');
 const bip39 = require('bip39');
 const bitcoin = require('bitcoinjs-lib');
 
-// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-const chainCode = {
-  'btc': 0,
-  'testnet': 1,
-  'eth': 60
-}
-
 function getPath (network: string): string {
+  // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+  const chainCode = {
+    'bitcoin': 0,
+    'testnet': 1,
+    'regtest': 1,
+    'ethereum': 60
+  };
   let chain = chainCode[network];
 
-  if (!chain) {
-    console.warn('network is not listed, defaulting to testnet');
-    chain = chain.testnet;
+  if (chain == null) {
+    chain = chainCode.testnet;
+    console.warn(`network is not listed, defaulting to testnet ${chain}`);
   }
   // https://ethereum.stackexchange.com/a/70029
   // https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
@@ -27,7 +27,6 @@ interface IKeyPair {
 }
 
 function generateKeyPair (network = 'testnet'): IKeyPair {
-  console.log('target network is', network);
   const mnemonic = bip39.generateMnemonic();
   console.log('mnenomic phrase generated:');
   console.log(mnemonic);
@@ -45,10 +44,24 @@ function generateKeyPair (network = 'testnet'): IKeyPair {
   };
 }
 
-function getBTCAddress (publicKey: Buffer) {
-  return bitcoin.payments.p2pkh({ pubkey: publicKey, network: bitcoin.networks.testnet }).address;
+function getBTCAddress (publicKey: Buffer, network: string) {
+  const supportedNetworks = Object.keys(bitcoin.networks);
+  if (!supportedNetworks.includes(network)) {
+    console.error('unsupported bitcoin network, cannot generate address');
+    return null;
+  }
+  return bitcoin.payments.p2pkh({ pubkey: publicKey, network: bitcoin.networks[network] }).address;
 }
 
-const { publicKey } = generateKeyPair();
-const bitcoinAddress = getBTCAddress(publicKey);
+function getNetwork (): string {
+  const args = process.argv;
+  const networkProperty = '--network';
+  const passedArgument = args.find(arg => arg.includes(networkProperty)).split('=')[1];
+  return passedArgument || 'testnet';
+}
+
+const network = getNetwork();
+console.log('target network is', network);
+const { publicKey } = generateKeyPair(network);
+const bitcoinAddress = getBTCAddress(publicKey, network);
 console.log('bitcoin address generated', bitcoinAddress);
