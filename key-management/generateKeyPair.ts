@@ -9,6 +9,7 @@ function getPath (network: string): string {
     'bitcoin': 0,
     'testnet': 1,
     'regtest': 1,
+    'ropsten': 1,
     'ethereum': 60
   };
   let chain = chainCode[network];
