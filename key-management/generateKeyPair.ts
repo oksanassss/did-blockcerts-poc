@@ -2,6 +2,7 @@ const bip32 = require('bip32');
 const bip39 = require('bip39');
 const bitcoin = require('bitcoinjs-lib');
 const web3 = require('web3');
+const secp256k1 = require('secp256k1');
 import generateDID from "./generateDID";
 
 function getPath (network: string): string {
@@ -29,18 +30,28 @@ interface IKeyPair {
   publicKey: Buffer;
 }
 
-function generateKeyPair (network = 'testnet'): IKeyPair {
+function generateFromBip32 (network): IKeyPair {
   const mnemonic = bip39.generateMnemonic();
   console.log('mnenomic phrase generated:');
   console.log(mnemonic);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic);
+  console.log(seed.toString('hex'));
   const node = bip32.fromSeed(seed);
   const path = getPath(network);
   const derived = node.derivePath(path);
   const { privateKey, publicKey } = derived;
-  console.log('private key generated', privateKey.toString('hex'));
-  console.log('public key generated', publicKey.toString('hex'));
+  console.log('private key bip32 generated', privateKey.toString('hex'), secp256k1.privateKeyVerify(privateKey));
+  console.log('public key bip32 generated', publicKey.toString('hex'));
+
+  return {
+    privateKey,
+    publicKey
+  };
+}
+
+function generateKeyPair (network = 'testnet'): IKeyPair {
+  const { privateKey, publicKey } = generateFromBip32(network);
   return {
     privateKey,
     publicKey
