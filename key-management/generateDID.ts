@@ -2,13 +2,29 @@
 import createIpid from 'did-ipid';
 import IPFS from 'ipfs-core';
 import crypto from 'libp2p-crypto';
+import KeyEncoder from 'key-encoder';
+
+function privateKeyToPem (key: Buffer) {
+  const keyEncoder = new KeyEncoder('secp256k1')
+  const pemPrivateKey = keyEncoder
+    .encodePrivate(key.toString('hex'), 'raw', 'pem')
+    .replace(/EC PRIVATE/g, 'PRIVATE');
+  console.log('private key converted to pem', pemPrivateKey);
+  return pemPrivateKey;
+}
 
 async function generateDID (privateKey: Buffer, publicKey: Buffer) {
+  const pemPrivateKey = privateKeyToPem(privateKey);
   const cryptoPrivateKey = new crypto.keys.supportedKeys.secp256k1.Secp256k1PrivateKey(privateKey, publicKey);
-  const ipfs = await IPFS.create();
+  const ipfs = await IPFS.create({ init: { privateKey: pemPrivateKey, algorithm: 'secp256k1' }});
   const ipid = await createIpid(ipfs);
 
-  const didDocument = await ipid.create(cryptoPrivateKey.bytes, (document) => {
+  // This is not working. Basically it always and only expects an RSA private key and this trick of passing
+  // the crypto key solves the first step: generating the DID, but fails on the second one, which is importing the keys
+  // I have tried to initiate ipfs with the private key, that does not work. If I pass the pem private key
+  // as second parameter it still fails as not RSA...
+  // all in all to work this far, this needs a modified fork of ipid locally
+  const didDocument = await ipid.create(cryptoPrivateKey.bytes, pemPrivateKey,  (document) => {
     const publicKeyRegistration = document.addPublicKey({
       type: 'secp256k1VerificationKey2018',
       publicKeyHex: publicKey,
