@@ -13,7 +13,7 @@ function privateKeyToPem (key: Buffer) {
   return pemPrivateKey;
 }
 
-async function generateDID (privateKey: Buffer, publicKey: Buffer) {
+async function generateIpidDID (privateKey: Buffer, publicKey: Buffer) {
   const pemPrivateKey = privateKeyToPem(privateKey);
   const cryptoPrivateKey = new crypto.keys.supportedKeys.secp256k1.Secp256k1PrivateKey(privateKey, publicKey);
   const ipfs = await IPFS.create({ init: { privateKey: pemPrivateKey, algorithm: 'secp256k1' }});
@@ -36,4 +36,4 @@ async function generateDID (privateKey: Buffer, publicKey: Buffer) {
   console.log(didDocument);
 }
 
-export default generateDID;
+export default generateIpidDID;
