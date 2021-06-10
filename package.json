@@ -10,6 +10,8 @@
   "author": "Julien Fraichot",
   "license": "ISC",
   "dependencies": {
+    "@decentralized-identity/ion-tools": "0.0.8",
+    "@transmute/did-key-secp256k1": "^0.2.1-unstable.42",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
     "bitcoinjs-lib": "^5.2.0",

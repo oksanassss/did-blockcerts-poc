@@ -3,7 +3,8 @@ const bip39 = require('bip39');
 const bitcoin = require('bitcoinjs-lib');
 const web3 = require('web3');
 const secp256k1 = require('secp256k1');
-import generateIpidDID from "./generateIpidDID";
+import generateIpidDID from './generateIpidDID';
+import generateIonDID from './generateIonDID';
 
 function getPath (network: string): string {
   // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
@@ -96,3 +97,4 @@ console.log('ethereum address generated', ethereumAddress);
 
 // DID
 // generateIpidDID(privateKey, publicKey);
+generateIonDID(privateKey, publicKey);
