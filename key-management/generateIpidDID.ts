@@ -3,6 +3,7 @@ import createIpid from 'did-ipid';
 import IPFS from 'ipfs-core';
 import crypto from 'libp2p-crypto';
 import KeyEncoder from 'key-encoder';
+import { createFromPrivKey } from 'peer-id';
 
 function privateKeyToPem (key: Buffer) {
   const keyEncoder = new KeyEncoder('secp256k1')
@@ -14,9 +15,10 @@ function privateKeyToPem (key: Buffer) {
 }
 
 async function generateIpidDID (privateKey: Buffer, publicKey: Buffer) {
-  const pemPrivateKey = privateKeyToPem(privateKey);
   const cryptoPrivateKey = new crypto.keys.supportedKeys.secp256k1.Secp256k1PrivateKey(privateKey, publicKey);
-  const ipfs = await IPFS.create({ init: { privateKey: pemPrivateKey, algorithm: 'secp256k1' }});
+  const peerIdFromPrivateKey = await createFromPrivKey(cryptoPrivateKey.bytes);
+  // console.log(peerIdFromPrivateKey);
+  const ipfs = await IPFS.create({ init: { privateKey: peerIdFromPrivateKey, algorithm: 'secp256k1' }, silent: false });
   const ipid = await createIpid(ipfs);
 
   // This is not working. Basically it always and only expects an RSA private key and this trick of passing
@@ -24,7 +26,7 @@ async function generateIpidDID (privateKey: Buffer, publicKey: Buffer) {
   // I have tried to initiate ipfs with the private key, that does not work. If I pass the pem private key
   // as second parameter it still fails as not RSA...
   // all in all to work this far, this needs a modified fork of ipid locally
-  const didDocument = await ipid.create(cryptoPrivateKey.bytes, pemPrivateKey,  (document) => {
+  const didDocument = await ipid.create(cryptoPrivateKey.bytes, peerIdFromPrivateKey,  (document) => {
     const publicKeyRegistration = document.addPublicKey({
       type: 'secp256k1VerificationKey2018',
       publicKeyHex: publicKey,

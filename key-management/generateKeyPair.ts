@@ -96,5 +96,5 @@ const ethereumAddress = getEthereumAddress(privateKey);
 console.log('ethereum address generated', ethereumAddress);
 
 // DID
-// generateIpidDID(privateKey, publicKey);
-generateIonDID(privateKey, publicKey);
+generateIpidDID(privateKey, publicKey);
+// generateIonDID(privateKey, publicKey);
