@@ -1,7 +1,6 @@
 import { keyUtils } from '@transmute/did-key-secp256k1';
 import ION from '@decentralized-identity/ion-tools';
 
-
 function jwkFrom (key: Buffer, isPrivate: boolean = false): any /* @trust/keyto */ {
   // TODO: should we keep the `kid` property?
   const keyToHexString = key.toString('hex');
@@ -29,6 +28,11 @@ async function generateIonDID (privateKey: Buffer, publicKey: Buffer) {
   });
   const didUri = await did.getURI();
   console.log('ION DID generated', didUri);
+  const requestBody = await did.generateRequest(0);
+  const request = new ION.AnchorRequest(requestBody);
+  let response = await request.submit();
+  const didUriShort = await did.getURI('short');
+  console.log(didUriShort);
 }
 
 export default generateIonDID;

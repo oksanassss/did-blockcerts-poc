@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate:keyPair": "npx ts-node key-management/generateKeyPair.ts"
+    "generate:keyPair": "npx ts-node key-management/generateKeyPair.ts",
+    "resolve": "npx ts-node resolvers/resolveDID.ts"
   },
   "author": "Julien Fraichot",
   "license": "ISC",

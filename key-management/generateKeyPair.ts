@@ -1,3 +1,5 @@
+import getArg from "../utils/getArg";
+
 const bip32 = require('bip32');
 const bip39 = require('bip39');
 const bitcoin = require('bitcoinjs-lib');
@@ -103,14 +105,13 @@ function getEthereumAddress (publicKey: Buffer): string {
   return null;
 }
 
-function getNetwork (): Network {
-  const args = process.argv;
+function getNetworkArg (): Network {
   const networkProperty = '--network';
-  const passedArgument = args.find(arg => arg.includes(networkProperty)).split('=')[1];
+  const passedArgument = getArg(networkProperty);
   return passedArgument as Network || Network.testnet;
 }
 
-const network = getNetwork();
+const network = getNetworkArg();
 console.log('target network is', network);
 const { publicKey, privateKey } = generateKeyPair(network);
 const bitcoinAddress = getBTCAddress(publicKey, network);
