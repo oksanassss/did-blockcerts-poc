@@ -1,5 +1,6 @@
 import { keyUtils } from '@transmute/did-key-secp256k1';
 import ION from '@decentralized-identity/ion-tools';
+import {ionApiServer, ionChallengeEndpoint} from "../config/ion";
 
 function jwkFrom (key: Buffer, isPrivate: boolean = false): any /* @trust/keyto */ {
   // TODO: should we keep the `kid` property?
@@ -29,7 +30,11 @@ async function generateIonDID (privateKey: Buffer, publicKey: Buffer) {
   const didUri = await did.getURI();
   console.log('ION DID generated', didUri);
   const requestBody = await did.generateRequest(0);
-  const request = new ION.AnchorRequest(requestBody);
+  const request = new ION.AnchorRequest(requestBody, {
+    // challengeEndpoint: `${ionApiServer}/proof-of-work-challenge`,
+    challengeEndpoint: ionChallengeEndpoint, // Not available locally?
+    solutionEndpoint: `${ionApiServer}/operations`
+  });
   let response = await request.submit();
   const didUriShort = await did.getURI('short');
   console.log(didUriShort);

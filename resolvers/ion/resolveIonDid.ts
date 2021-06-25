@@ -1,6 +1,9 @@
 import ION from '@decentralized-identity/ion-tools';
+import {ionApiServer} from "../../config/ion";
 
-export default async function resolveIonDid (did) {
-  const didDocument = await ION.resolve(did, { nodeEndpoint: 'http://localhost:3000/identifiers/' });
-  console.log(didDocument);
+async function resolveIonDid (did) {
+  const didDocument = await ION.resolve(did, { nodeEndpoint: `${ionApiServer}/identifiers/` });
+  console.log(JSON.stringify(didDocument, null, 2));
 }
+
+export default resolveIonDid;
