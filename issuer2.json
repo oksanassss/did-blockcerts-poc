@@ -12,7 +12,7 @@
   "revocationList": "https://github.com/oksanassss/did-blockcerts-poc/revocation-list.json",
   "publicKey": [
     {
-      "id": "ecdsa-koblitz-pubkey:0x07554Ce98175B0C21Dc7aff042224776EE42aB5b",
+      "id": "nft-cert-pubkey:0x07554Ce98175B0C21Dc7aff042224776EE42aB5b",
       "created": "2021-06-05T21:10:10.615+00:00"
     }
   ],
